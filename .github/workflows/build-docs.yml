@@ -87,6 +87,7 @@ jobs:
     - name: Clone FreeCAD source
       run: |
         git clone https://github.com/FreeCAD/FreeCAD.git freecad-source
+        git submodule update --init
 
     - name: Create build directory
       run: |
