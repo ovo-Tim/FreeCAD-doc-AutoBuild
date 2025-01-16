@@ -75,12 +75,14 @@ jobs:
 
     - name: Clone FreeCAD source
       run: |
+        cat /home/runner/.bashrc
+        source /home/runner/.bashrc
         git clone https://github.com/FreeCAD/FreeCAD.git --depth=1 freecad-source
         cd freecad-source
         git submodule update --init
         pixi run configure
 
-    - name: Create build directory
+    - name: Build
       run: |
         sed -i 's/SEARCHENGINE\s*=\s*NO/SEARCHENGINE = YES/' freecad-source/src/Doc/BuildDocDoxy.cfg # Enable search engine
         mkdir freecad-build
