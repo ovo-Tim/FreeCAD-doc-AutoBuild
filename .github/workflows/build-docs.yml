@@ -90,6 +90,7 @@ jobs:
 
     - name: Create build directory
       run: |
+        sed -i 's/SEARCHENGINE\s*=\s*NO/SEARCHENGINE = YES/' freecad-source/src/Doc/BuildDocDoxy.cfg # Enable search engine
         mkdir freecad-build
         cd freecad-build
         cmake -DBUILD_QT5=ON -DPYTHON_EXECUTABLE=/usr/bin/python3 ../freecad-source
