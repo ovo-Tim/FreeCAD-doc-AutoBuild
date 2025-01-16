@@ -101,37 +101,37 @@ jobs:
           tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz doc/Web
 
     - name: Package QCH documentation
-    run: |
-        cd freecad-build
-        tar -czvf freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz doc/qch
+      run: |
+          cd freecad-build
+          tar -czvf freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz doc/qch
 
     - name: Create GitHub Release
-    id: create_release
-    uses: actions/create-release@v1
-    env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    with:
-        tag_name: ${{ github.event.inputs.version }}
-        release_name: FreeCAD Documentation ${{ github.event.inputs.version }}
-        draft: false
-        prerelease: false
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: FreeCAD Documentation ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
 
     - name: Upload HTML documentation to GitHub Release
-    uses: actions/upload-release-asset@v1
-    env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: freecad-build/freecad-docs-html-${{ github.event.inputs.version }}.tar.gz
-        asset_name: freecad-docs-html-${{ github.event.inputs.version }}.tar.gz
-        asset_content_type: application/gzip
+      uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: freecad-build/freecad-docs-html-${{ github.event.inputs.version }}.tar.gz
+          asset_name: freecad-docs-html-${{ github.event.inputs.version }}.tar.gz
+          asset_content_type: application/gzip
 
     - name: Upload QCH documentation to GitHub Release
-    uses: actions/upload-release-asset@v1
-    env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: freecad-build/freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz
-        asset_name: freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz
-        asset_content_type: application/gzip
+      uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: freecad-build/freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz
+          asset_name: freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz
+          asset_content_type: application/gzip
