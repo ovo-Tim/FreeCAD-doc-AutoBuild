@@ -1,0 +1,137 @@
+name: Build and Publish FreeCAD Documentation
+
+on:
+    workflow_dispatch:  # 支持手动触发
+      inputs:
+        version:
+          description: 'Release version (e.g., v1.0.0)'  # 手动输入版本号
+          required: true
+          type: string
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        # I don't want to deal with any dependency problem.
+        sudo apt-get install -y --no-install-recommends               \
+                ccache                                      \
+                doxygen                                     \
+                graphviz                                    \
+                imagemagick                                 \
+                libboost-date-time-dev                      \
+                libboost-dev                                \
+                libboost-filesystem-dev                     \
+                libboost-graph-dev                          \
+                libboost-iostreams-dev                      \
+                libboost-program-options-dev                \
+                libboost-python-dev                         \
+                libboost-regex-dev                          \
+                libboost-serialization-dev                  \
+                libboost-thread-dev                         \
+                libcoin-dev                                 \
+                libeigen3-dev                               \
+                libkdtree++-dev                             \
+                libmedc-dev                                 \
+                libocct-data-exchange-dev                   \
+                libocct-ocaf-dev                            \
+                libocct-visualization-dev                   \
+                libopencv-dev                               \
+                libproj-dev                                 \
+                libpyside2-dev                              \
+                libqt5opengl5-dev                           \
+                libqt5svg5-dev                              \
+                libqt5x11extras5-dev                        \
+                libshiboken2-dev                            \
+                libspnav-dev                                \
+                libvtk7-dev                                 \
+                libx11-dev                                  \
+                libxerces-c-dev                             \
+                libyaml-cpp-dev                             \
+                libzipios++-dev                             \
+                netgen                                      \
+                netgen-headers                              \
+                ninja-build                                 \
+                occt-draw                                   \
+                pyqt5-dev-tools                             \
+                pyside2-tools                               \
+                python3-dev                                 \
+                python3-git                                 \
+                python3-markdown                            \
+                python3-matplotlib                          \
+                python3-packaging                           \
+                python3-pivy                                \
+                python3-ply                                 \
+                python3-pyside2.qtcore                      \
+                python3-pyside2.qtgui                       \
+                python3-pyside2.qtnetwork                   \
+                python3-pyside2.qtsvg                       \
+                python3-pyside2.qtwidgets                   \
+                qtbase5-dev                                 \
+                qttools5-dev                                \
+                shiboken2                                   \
+                swig                                        \
+                xvfb                                        \
+
+    - name: Clone FreeCAD source
+      run: |
+        git clone https://github.com/FreeCAD/FreeCAD.git freecad-source
+
+    - name: Create build directory
+      run: |
+        mkdir freecad-build
+        cd freecad-build
+        cmake -DBUILD_QT5=ON -DPYTHON_EXECUTABLE=/usr/bin/python3 ../freecad-source
+        make -j$(nproc) WebDoc
+
+        - name: Package HTML documentation
+        run: |
+          cd freecad-build
+          tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz doc/Web
+
+    - name: Package QCH documentation
+    run: |
+        cd freecad-build
+        tar -czvf freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz doc/qch
+
+    - name: Create GitHub Release
+    id: create_release
+    uses: actions/create-release@v1
+    env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+        tag_name: ${{ github.event.inputs.version }}
+        release_name: FreeCAD Documentation ${{ github.event.inputs.version }}
+        draft: false
+        prerelease: false
+
+    - name: Upload HTML documentation to GitHub Release
+    uses: actions/upload-release-asset@v1
+    env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: freecad-build/freecad-docs-html-${{ github.event.inputs.version }}.tar.gz
+        asset_name: freecad-docs-html-${{ github.event.inputs.version }}.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload QCH documentation to GitHub Release
+    uses: actions/upload-release-asset@v1
+    env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: freecad-build/freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz
+        asset_name: freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz
+        asset_content_type: application/gzip
