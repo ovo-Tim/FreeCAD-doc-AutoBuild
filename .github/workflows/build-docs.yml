@@ -87,6 +87,7 @@ jobs:
         mkdir freecad-build
         cd freecad-build
         cmake -DBUILD_QT5=ON -DPYTHON_EXECUTABLE=/usr/bin/python3 ../freecad-source
+        mkdir -p ./doc/SourceDocu
         make -j$(nproc) WebDoc
 
         - name: Package HTML documentation
