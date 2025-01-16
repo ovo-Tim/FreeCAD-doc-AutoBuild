@@ -66,18 +66,18 @@ jobs:
                 occt-draw                                   \
                 pyqt5-dev-tools                             \
                 pyside2-tools                               \
-                python3-dev                                 \
-                python3-git                                 \
-                python3-markdown                            \
-                python3-matplotlib                          \
-                python3-packaging                           \
-                python3-pivy                                \
-                python3-ply                                 \
-                python3-pyside2.qtcore                      \
-                python3-pyside2.qtgui                       \
-                python3-pyside2.qtnetwork                   \
-                python3-pyside2.qtsvg                       \
-                python3-pyside2.qtwidgets                   \
+                # python3-dev                                 \
+                # python3-git                                 \
+                # python3-markdown                            \
+                # python3-matplotlib                          \
+                # python3-packaging                           \
+                # python3-pivy                                \
+                # python3-ply                                 \
+                # python3-pyside2.qtcore                      \
+                # python3-pyside2.qtgui                       \
+                # python3-pyside2.qtnetwork                   \
+                # python3-pyside2.qtsvg                       \
+                # python3-pyside2.qtwidgets                   \
                 qtbase5-dev                                 \
                 qttools5-dev                                \
                 shiboken2                                   \
@@ -89,6 +89,7 @@ jobs:
         git clone https://github.com/FreeCAD/FreeCAD.git --depth=1 freecad-source
         cd freecad-source
         git submodule update --init
+        pip install -r requirements.txt
 
     - name: Create build directory
       run: |
