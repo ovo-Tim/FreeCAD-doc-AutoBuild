@@ -90,7 +90,7 @@ jobs:
         mkdir -p ./doc/SourceDocu
         make -j$(nproc) WebDoc
 
-        - name: Package HTML documentation
+    - name: Package HTML documentation
         run: |
           cd freecad-build
           tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz doc/Web
