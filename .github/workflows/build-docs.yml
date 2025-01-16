@@ -91,14 +91,14 @@ jobs:
         make -j$(nproc) WebDoc
 
     - name: Package HTML documentation
-        run: |
-          cd freecad-build
-          tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz doc/Web
+      run: |
+        cd freecad-build
+        tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz doc/Web
 
     - name: Package QCH documentation
       run: |
-          cd freecad-build
-          tar -czvf freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz doc/qch
+        cd freecad-build
+        tar -czvf freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz doc/qch
 
     - name: Create GitHub Release
       id: create_release
