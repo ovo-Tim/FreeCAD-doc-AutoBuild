@@ -137,6 +137,10 @@ jobs:
           asset_name: freecad-docs-qch-${{ github.event.inputs.version }}.qch
           asset_content_type: application/octet-stream
 
+    - name: Rm QHP
+      run: |
+        rm -rf freecad-source/src/Doc/html/index.qhp
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
