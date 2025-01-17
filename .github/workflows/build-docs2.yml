@@ -89,29 +89,20 @@ jobs:
     - name: Build
       run: |
         sed -i 's/SEARCHENGINE\s*=\s*NO/SEARCHENGINE = YES/' freecad-source/src/Doc/BuildDocDoxy.cfg # Enable search engine
-        mkdir freecad-build
-        cd freecad-build
-        cmake -DBUILD_QT5=ON -DPYTHON_EXECUTABLE=/usr/bin/python3 ../freecad-source
-        mkdir -p ./doc/SourceDocu
-        make -j$(nproc) WebDoc
+        cd freecad-source/src/Doc/
+        doxygen ./BuildDocDoxy.cfg
 
-    - name: Check build result
+    - name: Build qch
+      continue-on-error: true
       run: |
-        cd freecad-build/doc/SourceDocu
-        ls .
-        ls -R .
+        cd freecad-source/src/Doc/
+        qhelpgenerator ./html/index.qhp -o ./index.qch
 
     - name: Package HTML documentation
       continue-on-error: true
       run: |
-        cd freecad-build
-        tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz ./doc/SourceDocu/html
-
-    - name: Package QCH documentation
-      continue-on-error: true
-      run: |
-        cd freecad-build
-        tar -czvf freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz ./doc/SourceDocu/doc/qch
+        cd freecad-source/src/Doc/
+        tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz ./html
 
     - name: Create GitHub Release
       id: create_release
@@ -142,6 +133,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: freecad-build/freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz
-          asset_name: freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz
-          asset_content_type: application/gzip
+          asset_path: freecad-source/src/Doc/index.qch
+          asset_name: freecad-docs-qch-${{ github.event.inputs.version }}.qch
+          asset_content_type: application/octet-stream
