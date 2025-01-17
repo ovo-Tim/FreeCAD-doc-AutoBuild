@@ -79,6 +79,10 @@ jobs:
         git clone https://github.com/FreeCAD/FreeCAD.git --depth=1 freecad-source
         cd freecad-source
         git submodule update --init
+
+    - name: pixi install
+      run: |
+        cd freecad-source
         /home/runner/.pixi/bin/pixi run configure
 
     - name: Build
@@ -90,15 +94,23 @@ jobs:
         mkdir -p ./doc/SourceDocu
         make -j$(nproc) WebDoc
 
+    - name: Check build result
+      run: |
+        cd freecad-build/doc/SourceDocu
+        ls .
+        ls -R .
+
     - name: Package HTML documentation
+      continue-on-error: true
       run: |
         cd freecad-build
-        tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz doc/Web
+        tar -czvf freecad-docs-html-${{ github.event.inputs.version }}.tar.gz ./doc/SourceDocu/html
 
     - name: Package QCH documentation
+      continue-on-error: true
       run: |
         cd freecad-build
-        tar -czvf freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz doc/qch
+        tar -czvf freecad-docs-qch-${{ github.event.inputs.version }}.tar.gz ./doc/SourceDocu/doc/qch
 
     - name: Create GitHub Release
       id: create_release
@@ -113,6 +125,7 @@ jobs:
 
     - name: Upload HTML documentation to GitHub Release
       uses: actions/upload-release-asset@v1
+      continue-on-error: true
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -123,6 +136,7 @@ jobs:
 
     - name: Upload QCH documentation to GitHub Release
       uses: actions/upload-release-asset@v1
+      continue-on-error: true
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
